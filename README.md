@@ -3,18 +3,23 @@
 ## Instalar usando pip
 
 ´´´
+
 pip install andreani-aa-tools
+
 ´´´
 
 ## Importanción
 
 ´´´
+
 import aa_tools
+
 ´´´
 
 ## Ejemplo de uso
 
 ´´´
+
 from aa_tools import logger, haversine
 
 if __name__ == "__main__":
@@ -26,6 +31,7 @@ if __name__ == "__main__":
     log.log_console(f"Haversine distance: {result}", "INFO")
 
     log.close()
+    
 ´´´
 
 ### Listado de funciones agregadas:
@@ -40,8 +46,6 @@ if __name__ == "__main__":
 ### Listado de funciones a agregar:
 
 * División de un dataframe en una lista de dataframes para procesamiento en hilos.
-
-* Logger
 
 * Distancia de ruta entre dos puntos.
 

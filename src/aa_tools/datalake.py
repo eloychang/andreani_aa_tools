@@ -21,11 +21,6 @@ class datalake():
             "csv" : pd.read_csv
         }
 
-        self._upload_settings = {
-            "parquet" : pd.to_parquet,
-            "csv" : pd.to_csv
-        }
-
 
     def import_file(self, path, filename, format):
         directory_client = self._client.get_directory_client(path)
@@ -37,9 +32,12 @@ class datalake():
         return self._import_settings[format](BytesIO(downloaded_bytes))
 
 
-    def upload_file(self, path, filename, format):
+    def upload_file(self, data, path, filename, format):
         directory_client = self._client.get_directory_client(path)
 
         file_client = directory_client.create_file(filename)
-        file_contents= self._upload_settings[format](index=False).encode()
+        if format == "parquet":
+            file_contents = data.to_parquet(index=False).encode()
+        elif format == "csv":
+            file_contents = data.to_csv(index=False).encode()
         file_client.upload_data(file_contents, overwrite=True)
