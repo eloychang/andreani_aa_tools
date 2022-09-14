@@ -18,7 +18,7 @@ class logger:
         function_logger = deepcopy(self)
         function_logger._function_name = function_name
         function_logger.start_at = start_at
-        self._log_console(f"Starting function: {self._function_name}", "INFO", self._function_name)
+        self._log_console(f"Starting function: {function_name}", "INFO", function_name)
         return function_logger
 
     def log_console(self, message, log_level):
