@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     log = logger("test.py", "main")
 
-    result = haversine(-58.490160, -34.566116, -58.485096, -34.572123, log)
+    result = haversine(-58.490160, -34.566116, -58.485096, -34.572123)
 
     log.log_console(f"Haversine distance: {result}", "INFO")
 

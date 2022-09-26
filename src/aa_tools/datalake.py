@@ -1,43 +1,35 @@
 
-from azure.storage.filedatalake import DataLakeServiceClient
+from azure.storage.blob import BlobServiceClient
 import pandas as pd
 from io import BytesIO
-import pickle
 
 class datalake():
 
-    def __init__(self, credentials, file_system = "datalake"):
-        with open(credentials, "rb") as file:
-            storage_account_name, storage_account_key = pickle.load(file)
+    def __init__(self, dl_url, dl_key):
 
-        # Defino la conexión al datalake
-        service_client = DataLakeServiceClient(
-                account_url="{}://{}.dfs.core.windows.net".format("https", storage_account_name),
-                credential=storage_account_key)
-        self._client = service_client.get_file_system_client(file_system=file_system)
+        self._client = BlobServiceClient(account_url = dl_url, credential = dl_key)
 
         self._import_settings = {
             "parquet" : pd.read_parquet,
             "csv" : pd.read_csv
         }
 
+    def import_file(self, file_system, path, format):
+        file_client = self._client.get_blob_client(file_system, path, snapshot=None)
 
-    def import_file(self, path, filename, format):
-        directory_client = self._client.get_directory_client(path)
-        file_client = directory_client.get_file_client(filename)
         # descargo los datos
-        download = file_client.download_file()
+        download = file_client.download_blob()
         downloaded_bytes = download.readall()
 
         return self._import_settings[format](BytesIO(downloaded_bytes))
 
 
-    def upload_file(self, data, path, filename, format):
-        directory_client = self._client.get_directory_client(path)
+    def upload_file(self, data, file_system, path, format, index = False):
+        file_client = client.get_blob_client(file_system, path, snapshot=None)
 
-        file_client = directory_client.create_file(filename)
         if format == "parquet":
-            file_contents = data.to_parquet(index=False).encode()
+            file_contents = data.to_parquet(index=index).encode()
         elif format == "csv":
-            file_contents = data.to_csv(index=False).encode()
-        file_client.upload_data(file_contents, overwrite=True)
+            file_contents = data.to_csv(index=index).encode()
+
+        file_client.upload_blob(file_contents)
