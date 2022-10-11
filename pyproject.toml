@@ -3,7 +3,7 @@ requires = ["setuptools>=42"]
 build-backend = "setuptools.build_meta"
 [project]
 name = "andreani_aa_tools"
-version = "0.0.9"
+version = "0.0.10"
 authors = [
   { name = "Ignacio Belogi", email = "ibelogi@andreani.com" },
   { name = "Gabriel Aranda", email = "garanda@andreani.com" },
@@ -13,9 +13,11 @@ authors = [
   { name = "Daiana Alonso", email = "dalonso@andreani.com" },
   { name = "Facundo Silvestre", email = "fsilvestre@andreani.com" },
   { name = "Santiago Bergman", email = "sbergman@andreani.com" },
-  { name = "Matías Moyano", email = "mmoyano@andreani.com" },
+  { name = "Matías Moyano", email = "matmoyano@andreani.com" },
   { name = "Giuliana Vera", email = "gvera@andreani.com" },
   { name = "Eloy Chang", email = "echang@andreani.com" },
+  { name = "Ezequiel Brodschi", email = "ebrodschi@andreani.com" },
+  { name = "Sol Cari", email = "scari@andreani.com" },
 ]
 description = "Common functions and protocols used by the Andreani Advanced Analytics team"
 readme = "README.md"
