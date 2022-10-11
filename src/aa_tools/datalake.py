@@ -3,6 +3,7 @@ from azure.storage.filedatalake import DataLakeServiceClient
 import pandas as pd
 from io import BytesIO
 import pickle
+import json
 
 class datalake():
 
@@ -41,5 +42,5 @@ class datalake():
         elif write_format == "csv":
             file_contents = data.to_csv(index=False).encode()
         elif write_format == "json":
-            file_contents = data
+            file_contents = json.dumps(data).encode('utf-8')
         file_client.upload_data(file_contents, overwrite=True)
