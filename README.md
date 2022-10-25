@@ -8,7 +8,7 @@ pip install andreani-aa-tools
 
 ```
 
-## Importanción
+## Importación
 
 ```
 
@@ -17,6 +17,8 @@ import aa_tools
 ```
 
 ## Ejemplo de uso
+
+- Haversine
 
 ```
 
@@ -31,6 +33,22 @@ if __name__ == "__main__":
     log.log_console(f"Haversine distance: {result}", "INFO")
 
     log.close()
+
+```
+
+- Apply Parallel
+
+```
+from aa_tools import applyparallel
+
+def func(row):
+    return row['A'] + row['B'] 
+
+def func_2(row, nro):
+    return row['A'] * nro
+
+df['C'] = df.apply_parallel(func, num_processes=4)
+df['D'] = df.apply_parallel(func_2, nro=5)
 
 ```
 

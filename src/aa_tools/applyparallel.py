@@ -3,6 +3,9 @@ from multiprocess import Pool
 import functools
 from os import cpu_count
 
+def attachpandas():
+    pd.core.frame.DataFrame.apply_parallel = df_apply_parallel
+
 def df_apply_parallel(self, func, *static_data, num_processes=cpu_count(), **kwargs):
     """
     Add functionality to pandas so that you can do processing on dataframes on multiple cores at same time.
