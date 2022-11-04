@@ -11,10 +11,10 @@ def apply_parallel(df, func, **kwargs):
     Return
         Result as Series that can be stored in new column.
     """
-    # Conversion to pandas Dataframe to Dask Dataframe
+    # Conversion from pandas Dataframe to Dask Dataframe
     ddf= dd.from_pandas(df, npartitions=cpu_count())
 
-    # Apply function and store in Dask Series
+    # Apply function and return as Dask Series
     d_series = ddf.apply(func, args=kwargs, meta=df.dtypes, axis=1)
 
     return d_series.compute()
