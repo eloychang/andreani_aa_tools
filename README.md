@@ -39,7 +39,7 @@ if __name__ == "__main__":
 - Apply Parallel
 
 ```
-from aa_tools import applyparallel
+from aa_tools import apply_parallel
 
 def func(row):
     return row['A'] + row['B'] 
@@ -47,8 +47,8 @@ def func(row):
 def func_2(row, nro):
     return row['A'] * nro
 
-df['C'] = df.apply_parallel(func, num_processes=4)
-df['D'] = df.apply_parallel(func_2, nro=5)
+df['C'] = apply_parallel(df, func)
+df['D'] = apply_parallel(df, func, nro=5)
 
 ```
 

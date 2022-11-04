@@ -3,21 +3,21 @@ requires = ["setuptools>=42"]
 build-backend = "setuptools.build_meta"
 [project]
 name = "andreani_aa_tools"
-version = "0.0.12"
+version = "0.0.13"
 authors = [
-  { name = "Ignacio Belogi", email = "ibelogi@andreani.com" },
-  { name = "Gabriel Aranda", email = "garanda@andreani.com" },
-  { name = "Mariana Liu", email = "mliu@andreani.com" },
-  { name = "Yasmin Ojeda", email = "yojeda@andreani.com" },
-  { name = "Ariel Fleiderman", email = "afleiderman@andreani.com" },
-  { name = "Daiana Alonso", email = "dalonso@andreani.com" },
-  { name = "Facundo Silvestre", email = "fsilvestre@andreani.com" },
-  { name = "Santiago Bergman", email = "sbergman@andreani.com" },
-  { name = "Matías Moyano", email = "matmoyano@andreani.com" },
-  { name = "Giuliana Vera", email = "gvera@andreani.com" },
-  { name = "Eloy Chang", email = "echang@andreani.com" },
-  { name = "Ezequiel Brodschi", email = "ebrodschi@andreani.com" },
-  { name = "Sol Cari", email = "scari@andreani.com" },
+  "Ignacio Belogi <ibelogi@andreani.com>",
+  "Gabriel Aranda <garanda@andreani.com>",
+  "Mariana Liu <mliu@andreani.com>",
+  "Yasmin Ojeda <yojeda@andreani.com>",
+  "Ariel Fleiderman <afleiderman@andreani.com>",
+  "Daiana Alonso <dalonso@andreani.com>",
+  "Facundo Silvestre <fsilvestre@andreani.com>",
+  "Santiago Bergman <sbergman@andreani.com>",
+  "Matías Moyano <matmoyano@andreani.com>",
+  "Giuliana Vera <gvera@andreani.com>",
+  "Eloy Chang <echang@andreani.com>",
+  "Ezequiel Brodschi <ebrodschi@andreani.com>",
+  "Sol Cari <scari@andreani.com>",
 ]
 description = "Common functions and protocols used by the Andreani Advanced Analytics team"
 readme = "README.md"

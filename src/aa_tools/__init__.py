@@ -5,8 +5,5 @@ from .logger import logger
 
 from .datalake import datalake
 
-from .applyparallel import applyparallel
+from .applyparallel import apply_parallel
 
-__all__ = [
-    'applyparallel',
-]
