@@ -68,3 +68,5 @@ df['D'] = df.apply_parallel(func_2, nro=5)
 * Distancia de ruta entre dos puntos.
 
 * Model training
+
+* Conexión a Elastic Search
