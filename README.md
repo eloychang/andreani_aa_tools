@@ -47,7 +47,7 @@ def func(row):
 def func_2(row, nro):
     return row['A'] * nro
 
-df['C'] = apply_parallel(df, func)
+df['C'] = apply_parallel(df, func, n_process=2)
 df['D'] = apply_parallel(df, func, nro=5)
 
 ```
