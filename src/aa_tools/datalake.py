@@ -30,6 +30,12 @@ class datalake():
         download = file_client.download_file()
         downloaded_bytes = download.readall()
 
+        if(read_format == 'csv'):
+            try:
+                return pd.read_csv(BytesIO(downloaded_bytes), sep=',')
+            except pd.errors.ParserError:
+                return pd.read_csv(BytesIO(downloaded_bytes), sep=';', low_memory=False)
+
         return self._import_settings[read_format](BytesIO(downloaded_bytes))
 
 
