@@ -19,7 +19,8 @@ class datalake():
 
         self._import_settings = {
             "parquet" : pd.read_parquet,
-            "csv" : pd.read_csv
+            "csv" : pd.read_csv,
+            "json" : json.loads
         }
 
 
@@ -29,8 +30,10 @@ class datalake():
         # descargo los datos
         download = file_client.download_file()
         downloaded_bytes = download.readall()
-
-        return self._import_settings[read_format](BytesIO(downloaded_bytes))
+        if read_format == 'json':
+            return self._import_settings[read_format]((downloaded_bytes))
+        else:
+            return self._import_settings[read_format](BytesIO(downloaded_bytes))
 
 
     def upload_file(self, data, path, filename, write_format):
