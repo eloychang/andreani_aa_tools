@@ -23,7 +23,7 @@ class datalake():
         }
 
 
-    def import_file(self, path, filename, read_format):
+    def import_file(self, path, filename, read_format, separator = ','):
         directory_client = self._client.get_directory_client(path)
         file_client = directory_client.get_file_client(filename)
         # descargo los datos
@@ -31,10 +31,7 @@ class datalake():
         downloaded_bytes = download.readall()
 
         if(read_format == 'csv'):
-            try:
-                return pd.read_csv(BytesIO(downloaded_bytes), sep=',')
-            except pd.errors.ParserError:
-                return pd.read_csv(BytesIO(downloaded_bytes), sep=';', low_memory=False)
+            return pd.read_csv(BytesIO(downloaded_bytes), sep=separator, low_memory=False)
 
         return self._import_settings[read_format](BytesIO(downloaded_bytes))
 
