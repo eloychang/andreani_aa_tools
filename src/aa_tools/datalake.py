@@ -24,16 +24,17 @@ class datalake():
         }
 
 
-    def import_file(self, path, filename, read_format):
+    def import_file(self, path, filename, read_format, separator = ',', decimal = '.'):
         directory_client = self._client.get_directory_client(path)
         file_client = directory_client.get_file_client(filename)
         # descargo los datos
         download = file_client.download_file()
         downloaded_bytes = download.readall()
-        if read_format == 'json':
-            return self._import_settings[read_format]((downloaded_bytes))
-        else:
-            return self._import_settings[read_format](BytesIO(downloaded_bytes))
+
+        if(read_format == 'csv'):
+            return pd.read_csv(BytesIO(downloaded_bytes), sep=separator, decimal=decimal, low_memory=False)
+
+        return self._import_settings[read_format](BytesIO(downloaded_bytes))
 
 
     def upload_file(self, data, path, filename, write_format):
