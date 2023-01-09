@@ -31,10 +31,12 @@ class datalake():
         download = file_client.download_file()
         downloaded_bytes = download.readall()
 
-        if(read_format == 'csv'):
+        if read_format == 'csv':
             return pd.read_csv(BytesIO(downloaded_bytes), sep=separator, decimal=decimal, low_memory=False)
-
-        return self._import_settings[read_format](BytesIO(downloaded_bytes))
+        elif read_format == 'json':
+            return self._import_settings[read_format](downloaded_bytes)
+        else:
+            return self._import_settings[read_format](BytesIO(downloaded_bytes))
 
 
     def upload_file(self, data, path, filename, write_format):
