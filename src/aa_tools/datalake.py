@@ -19,7 +19,8 @@ class datalake():
 
         self._import_settings = {
             "parquet" : pd.read_parquet,
-            "csv" : pd.read_csv
+            "csv" : pd.read_csv,
+            "json" : json.loads
         }
 
 

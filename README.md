@@ -58,7 +58,7 @@ df['D'] = df.apply_parallel(func_2, nro=5)
 
 * Logger: Maneja el log según los lineamientos de Andreani.
 
-* Datalake: Interfaz de conexión al datalake para descargar y cargar archivos csv y/o parquet.
+* Datalake: Interfaz de conexión al datalake para descargar y cargar archivos csv, parquet y/o json.
 
 
 ### Listado de funciones a agregar:
