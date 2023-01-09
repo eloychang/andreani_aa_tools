@@ -36,22 +36,6 @@ if __name__ == "__main__":
 
 ```
 
-- Apply Parallel
-
-```
-from aa_tools import applyparallel
-
-def func(row):
-    return row['A'] + row['B'] 
-
-def func_2(row, nro):
-    return row['A'] * nro
-
-df['C'] = df.apply_parallel(func, num_processes=4)
-df['D'] = df.apply_parallel(func_2, nro=5)
-
-```
-
 ### Listado de funciones agregadas:
 
 * Haversine: Distancia euclidia entre dos puntos.
@@ -62,8 +46,6 @@ df['D'] = df.apply_parallel(func_2, nro=5)
 
 
 ### Listado de funciones a agregar:
-
-* División de un dataframe en una lista de dataframes para procesamiento en hilos.
 
 * Distancia de ruta entre dos puntos.
 
