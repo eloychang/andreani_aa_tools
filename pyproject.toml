@@ -3,7 +3,7 @@ requires = ["setuptools>=42"]
 build-backend = "setuptools.build_meta"
 [project]
 name = "andreani_aa_tools"
-version = "0.0.12"
+version = "0.0.13"
 authors = [
   { name = "Ignacio Belogi", email = "ibelogi@andreani.com" },
   { name = "Gabriel Aranda", email = "garanda@andreani.com" },
