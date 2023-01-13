@@ -5,6 +5,7 @@ from azureml.core.experiment import Experiment
 from azureml.core.compute import ComputeTarget
 from azureml.core.runconfig import DockerConfiguration
 from datetime import datetime
+from aa_tools import logger
 
 class pipeline:
 
@@ -30,21 +31,25 @@ class pipeline:
         self._experiment_name = f'{project}_{model}'
 
 
-    def run(self, credentials_file, enviroment_file, directory, script_file):
+    def run(self, credentials_file, environment_file, directory, script_file, log = None):
+        if log is None:
+            log = logger("aml_pipeline", "aa_tools.aml_pipeline.pipeline.run")
+        else:
+            log = log.start_function("aa_tools.aml_pipeline.pipeline.run")
 
         self._connect_to_workspace(credentials_file)
-        print("Connected to workspace")
+        log.log_console("Connected to workspace", "INFO")
 
         self._create_experiment()
-        print("Experiment created")
+        log.log_console("Experiment created", "INFO")
 
-        self._create_environment(enviroment_file)
-        print("Environment created")
+        self._create_environment(environment_file)
+        log.log_console("Environment created", "INFO")
 
         self._define_script_config(directory, script_file)
-        print("Config setted")
+        log.log_console("Config setted", "INFO")
 
-        self._run()
+        self._run(log)
 
 
     def _connect_to_workspace(self, credentials_file):
@@ -62,8 +67,8 @@ class pipeline:
         self._experiment = Experiment(workspace = self._ws, name = self._experiment_name)
 
 
-    def _create_environment(self, enviroment_file):
-        self._env = Environment.from_conda_specification(self._experiment_name, enviroment_file)
+    def _create_environment(self, environment_file):
+        self._env = Environment.from_conda_specification(self._experiment_name, environment_file)
 
 
     def _define_script_config(self, directory, script_file):
@@ -83,14 +88,15 @@ class pipeline:
                                     docker_runtime_config = docker_config)
 
 
-    def _run(self):
-        print("Start experiment run")
+    def _run(self, log):
+        log = log.start_function("aa_tools.aml_pipeline.pipeline.run._run")
         run = self._experiment.submit(config = self._config, tags = self._tags)
-        self._check_satus(run)
-        print(f"Experiment finished with status: {run.get_status()}")
+        self._check_satus(run, log)
+        log.log_console(f"Experiment finished with status: {run.get_status()}", "INFO")
+        log.close()
 
 
-    def _check_satus(self, run):
+    def _check_satus(self, run, log):
         start_at = datetime.now()
         last_changed_at = datetime.now()
         last_status = "None"
@@ -99,7 +105,7 @@ class pipeline:
             status = run.get_status()
             if status != last_status:
                 changed_at = datetime.now()
-                print(F"New status: {status} - Status time: {changed_at - last_changed_at} - Total time: {changed_at - start_at}")
+                log.log_console(f"New status: {status} - Status time: {changed_at - last_changed_at} - Total time: {changed_at - start_at}", "INFO")
                 last_changed_at = changed_at
                 last_status = status
             ready = status in ["Failed", "Completed"]
