@@ -6,10 +6,11 @@ class elastic():
 
     def __init__(self, url_elastic, indice, clave):
         self._es = Elasticsearch([{"host": url_elastic, "http_auth": (indice, clave), "port": 80, "timeout": 30}])
-        self._srch = self._import_data()
+        self._settings = {
+            "unificacion" : self._query_unificacion
+        }
 
-    def _import_data(self, tamaño_muestra, fecha, operacion):
-        
+    def _query_unificacion(self, tamaño_muestra, fecha, operacion):        
         bd = {
                     "size":tamaño_muestra,
                     "query": {
@@ -21,20 +22,18 @@ class elastic():
                         }
                     }
                 }
-        self._srch = self._es.search(index='unificacion', doc_type='ui_events', body = bd)
-
-
-    def create_df(self):
+        srch = self._es.search(index='unificacion', doc_type='ui_events', body = bd)
+        
         dires = []
-        for i in range(len(self._srch["hits"]["hits"])):
+        for i in range(len(srch["hits"]["hits"])):
             try:
-                fecha = self._srch["hits"]["hits"][i]["_source"]["context"]["date"]
-                operacion = self._srch["hits"]["hits"][i]["_source"]["context"]["operation"]
-                sucursal = self._srch["hits"]["hits"][i]["_source"]["context"]["branchName"]
-                user = self._srch["hits"]["hits"][i]["_source"]["context"]["user"]
+                fecha = srch["hits"]["hits"][i]["_source"]["context"]["date"]
+                operacion = srch["hits"]["hits"][i]["_source"]["context"]["operation"]
+                sucursal = ssrch["hits"]["hits"][i]["_source"]["context"]["branchName"]
+                user = srch["hits"]["hits"][i]["_source"]["context"]["user"]
                 
 
-                dt = eval(self._srch["hits"]["hits"][i]["_source"]["data"].replace("null","'null'").replace("false","'false'").replace("true","'true'"))
+                dt = eval(srch["hits"]["hits"][i]["_source"]["data"].replace("null","'null'").replace("false","'false'").replace("true","'true'"))
             
                 d = dt["shipments"]
                 for j in range(len(d)):
@@ -66,3 +65,8 @@ class elastic():
         df = df.reset_index(drop=True)
         
         return df
+        
+        
+    def get_data(self, indice, **kwargs, fecha = datetime.now(), tamaño_muestra = 10000):
+        reurn self._settings[indice](**kwargs, fecha, tamaño_muestra)
+        
