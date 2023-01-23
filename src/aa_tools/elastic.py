@@ -7,7 +7,7 @@ class elastic():
     def __init__(self, url_elastic, indice, clave):
         self._es = Elasticsearch([{"host": url_elastic, "http_auth": (indice, clave), "port": 80, "timeout": 30}])
 
-    def _query_unificacion(self, tamaño_muestra, fecha, join):        
+    def query_unificacion(self, tamaño_muestra, fecha, join = 'inner'):        
         bd = {
                 "size": tamaño_muestra,
                 "query": {
@@ -103,6 +103,4 @@ class elastic():
         return df
         
         
-    def get_data(self, tamaño_muestra, fecha , join):
-        return self._query_unificacion(self, tamaño_muestra, fecha, join)
         
