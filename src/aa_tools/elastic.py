@@ -6,34 +6,53 @@ class elastic():
 
     def __init__(self, url_elastic, indice, clave):
         self._es = Elasticsearch([{"host": url_elastic, "http_auth": (indice, clave), "port": 80, "timeout": 30}])
-        self._settings = {
-            "unificacion" : self._query_unificacion
-        }
 
-    def _query_unificacion(self, tamaño_muestra, fecha, operacion):        
+    def _query_unificacion(self, tamaño_muestra, fecha, join):        
         bd = {
-                    "size":tamaño_muestra,
+                "size": tamaño_muestra,
+                "query": {
+                    "bool": {
+                        "must": [
+                            {
+                                "match": {"context.date": fecha}
+                            },
+                            {
+                                "match": {"context.operation": "generate_definitive_roadmap"}
+                            }
+                        ]
+                    }
+                }
+            }
+        srch = self._es.search(index='unificacion', doc_type='ui_events', body = bd)
+
+        bd = {
+                    "size": 10000,
                     "query": {
                         "bool": {
                             "must": [
-                                {"match": {"context.date": fecha}},
-                                {"match": {"context.operation": operacion}}
+                                {
+                                    "match": {"context.date": '2023-01-07'}
+                                },
+                                {
+                                    "match": {"context.operation": "normalize_shipment_address_andreani"}
+                                }
                             ]
                         }
                     }
                 }
-        srch = self._es.search(index='unificacion', doc_type='ui_events', body = bd)
-        
+        srch_n = self._es.search(index='unificacion', doc_type='ui_events', body = bd)
+
         dires = []
         for i in range(len(srch["hits"]["hits"])):
             try:
                 fecha = srch["hits"]["hits"][i]["_source"]["context"]["date"]
-                operacion = srch["hits"]["hits"][i]["_source"]["context"]["operation"]
-                sucursal = ssrch["hits"]["hits"][i]["_source"]["context"]["branchName"]
+                operation = srch["hits"]["hits"][i]["_source"]["context"]["operation"]
+                sucursal=srch["hits"]["hits"][i]["_source"]["context"]["branchName"]
                 user = srch["hits"]["hits"][i]["_source"]["context"]["user"]
                 
 
                 dt = eval(srch["hits"]["hits"][i]["_source"]["data"].replace("null","'null'").replace("false","'false'").replace("true","'true'"))
+                f = srch["hits"]["hits"][i]["_source"]["context"]["date"]
             
                 d = dt["shipments"]
                 for j in range(len(d)):
@@ -49,10 +68,10 @@ class elastic():
                         "codigoPostal":d[j]["postalCode"],
                         "latitude":d[j]["standardAddress"]["latitude"],
                         "longitude":d[j]["standardAddress"]["longitude"],
-                        "fecha":fecha,
+                        "fecha":f,
                         "sucursal":sucursal,
                         "user":user,
-                        "operacion":operacion,
+                        "operacion": operation,
                         'preNormalized': preNorm
                         
 
@@ -61,12 +80,30 @@ class elastic():
             except:
                 continue
 
+        dires_normalize = []
+        for i in range(len(srch_n["hits"]["hits"])):
+            
+            try:
+                dt = eval(srch_n["hits"]["hits"][i]["_source"]["data"].replace("null","'null'").replace("false","'false'").replace("true","'true'"))
+                dire={
+                        "shipmentNumber":dt["response"]['standardAddress']["entityNumber"],
+                        "latitude_andreani":dt["response"]['standardAddress']["latitude"],
+                        "longitude_andreani":dt["response"]['standardAddress']["longitude"],
+                        "mensaje_elastic":dt["response"]['standardAddress']["message"],
+                        "mensaje_geolocalizacion_elastic":dt["response"]['standardAddress']["mensaje_geolocalizacion"]       
+                    }
+                dires_normalize.append(dire)
+            except:
+                continue
+
         df = pd.DataFrame(dires).drop_duplicates(["calle","localidad","provincia","numero","codigoPostal","latitude","longitude"])
         df = df.reset_index(drop=True)
+        elastic_andreani = pd.DataFrame(dires_normalize)
+        df = df.merge(elastic_andreani, how= join, left_on='shipmentNumber', right_on='shipmentNumber')
         
         return df
         
         
-    def get_data(self, indice, **kwargs, fecha = datetime.now(), tamaño_muestra = 10000):
-        reurn self._settings[indice](**kwargs, fecha, tamaño_muestra)
+    def get_data(self, tamaño_muestra, fecha , join):
+        return self._query_unificacion(self, tamaño_muestra, fecha, join)
         
