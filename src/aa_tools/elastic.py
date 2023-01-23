@@ -26,12 +26,12 @@ class elastic():
         srch = self._es.search(index='unificacion', doc_type='ui_events', body = bd)
 
         bd = {
-                    "size": 10000,
+                    "size": tamaño_muestra,
                     "query": {
                         "bool": {
                             "must": [
                                 {
-                                    "match": {"context.date": '2023-01-07'}
+                                    "match": {"context.date": fecha}
                                 },
                                 {
                                     "match": {"context.operation": "normalize_shipment_address_andreani"}
@@ -52,7 +52,6 @@ class elastic():
                 
 
                 dt = eval(srch["hits"]["hits"][i]["_source"]["data"].replace("null","'null'").replace("false","'false'").replace("true","'true'"))
-                f = srch["hits"]["hits"][i]["_source"]["context"]["date"]
             
                 d = dt["shipments"]
                 for j in range(len(d)):
@@ -68,7 +67,7 @@ class elastic():
                         "codigoPostal":d[j]["postalCode"],
                         "latitude":d[j]["standardAddress"]["latitude"],
                         "longitude":d[j]["standardAddress"]["longitude"],
-                        "fecha":f,
+                        "fecha":fecha,
                         "sucursal":sucursal,
                         "user":user,
                         "operacion": operation,
