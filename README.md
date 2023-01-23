@@ -50,3 +50,5 @@ if __name__ == "__main__":
 * Distancia de ruta entre dos puntos.
 
 * Model training
+
+* Conexión a Elastic Search
