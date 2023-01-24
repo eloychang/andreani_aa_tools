@@ -7,7 +7,9 @@ class elastic():
     def __init__(self, url_elastic, indice, clave):
         self._es = Elasticsearch([{"host": url_elastic, "http_auth": (indice, clave), "port": 80, "timeout": 30}])
 
-    def query_unificacion(self, tamaño_muestra, fecha, join = 'inner'):        
+    def query_unificacion(self, tamaño_muestra, fecha, join = 'inner'): 
+        self.join = join
+               
         bd = {
                 "size": tamaño_muestra,
                 "query": {
@@ -23,7 +25,7 @@ class elastic():
                     }
                 }
             }
-        srch = self._es.search(index='unificacion', doc_type='ui_events', body = bd)
+        self.srch = self._es.search(index='unificacion', doc_type='ui_events', body = bd)
 
         bd = {
                     "size": tamaño_muestra,
@@ -40,18 +42,25 @@ class elastic():
                         }
                     }
                 }
-        srch_n = self._es.search(index='unificacion', doc_type='ui_events', body = bd)
+        self.srch_n = self._es.search(index='unificacion', doc_type='ui_events', body = bd)
 
+        self.dires = self._data_roadmap()
+        self.dires_normalize = self._data_normalized()
+        df = self._merge_data()
+        
+        return df
+        
+    def _data_roadmap(self):
         dires = []
-        for i in range(len(srch["hits"]["hits"])):
+        for i in range(len(self.srch["hits"]["hits"])):
             try:
-                fecha = srch["hits"]["hits"][i]["_source"]["context"]["date"]
-                operation = srch["hits"]["hits"][i]["_source"]["context"]["operation"]
-                sucursal=srch["hits"]["hits"][i]["_source"]["context"]["branchName"]
-                user = srch["hits"]["hits"][i]["_source"]["context"]["user"]
+                fecha = self.srch["hits"]["hits"][i]["_source"]["context"]["date"]
+                operation = self.srch["hits"]["hits"][i]["_source"]["context"]["operation"]
+                sucursal = self.srch["hits"]["hits"][i]["_source"]["context"]["branchName"]
+                user = self.srch["hits"]["hits"][i]["_source"]["context"]["user"]
                 
 
-                dt = eval(srch["hits"]["hits"][i]["_source"]["data"].replace("null","'null'").replace("false","'false'").replace("true","'true'"))
+                dt = eval(self.srch["hits"]["hits"][i]["_source"]["data"].replace("null","'null'").replace("false","'false'").replace("true","'true'"))
             
                 d = dt["shipments"]
                 for j in range(len(d)):
@@ -78,12 +87,14 @@ class elastic():
                     dires.append(dire)
             except:
                 continue
+        return dires       
 
+    def _data_normalized(self):            
         dires_normalize = []
-        for i in range(len(srch_n["hits"]["hits"])):
+        for i in range(len(self.srch_n["hits"]["hits"])):
             
             try:
-                dt = eval(srch_n["hits"]["hits"][i]["_source"]["data"].replace("null","'null'").replace("false","'false'").replace("true","'true'"))
+                dt = eval(self.srch_n["hits"]["hits"][i]["_source"]["data"].replace("null","'null'").replace("false","'false'").replace("true","'true'"))
                 dire={
                         "shipmentNumber":dt["response"]['standardAddress']["entityNumber"],
                         "latitude_andreani":dt["response"]['standardAddress']["latitude"],
@@ -94,11 +105,13 @@ class elastic():
                 dires_normalize.append(dire)
             except:
                 continue
+        return dires_normalize        
 
-        df = pd.DataFrame(dires).drop_duplicates(["calle","localidad","provincia","numero","codigoPostal","latitude","longitude"])
+    def _merge_data(self):
+        df = pd.DataFrame(self.dires).drop_duplicates(["calle","localidad","provincia","numero","codigoPostal","latitude","longitude"])
         df = df.reset_index(drop=True)
-        elastic_andreani = pd.DataFrame(dires_normalize)
-        df = df.merge(elastic_andreani, how= join, left_on='shipmentNumber', right_on='shipmentNumber')
+        elastic_andreani = pd.DataFrame(self.dires_normalize)
+        df = df.merge(elastic_andreani, how= self.join, left_on='shipmentNumber', right_on='shipmentNumber')
         
         return df
         
