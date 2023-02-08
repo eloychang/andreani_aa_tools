@@ -1,7 +1,7 @@
 
 class databricks():
 
-    def upload_file_from_databricks(df,file_name,file_type,path_folder='/advanced_analytics/'):
+    def upload_file_to_datalake(df,file_name,file_type,path_folder='/advanced_analytics/'):
                        
         #establece path completo en donde se guardará la carpeta output del proceso de spark
         file_datalake = spark.conf.get("datalake.path")+path_folder+file_name 
