@@ -7,9 +7,15 @@ import json
 
 class datalake():
 
-    def __init__(self, credentials, file_system = "datalake"):
-        with open(credentials, "rb") as file:
-            storage_account_name, storage_account_key = pickle.load(file)
+    def __init__(self, credentials, file_system = "datalake", name=None, key=None):
+        
+        if name==None and key==None:
+            with open(credentials, "rb") as file:
+                storage_account_name, storage_account_key = pickle.load(file)
+
+        else:
+            storage_account_name = name
+            storage_account_key = key
 
         # Defino la conexión al datalake
         service_client = DataLakeServiceClient(
