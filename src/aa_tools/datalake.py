@@ -52,7 +52,7 @@ class datalake():
 
         file_client = directory_client.create_file(filename)
         if write_format == "parquet":
-            file_contents = data.to_parquet(index=False).encode()
+            file_contents = data.to_parquet(index=False)
         elif write_format == "csv":
             file_contents = data.to_csv(index=False).encode()
         elif write_format == "json":
