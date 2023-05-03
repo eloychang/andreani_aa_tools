@@ -22,6 +22,8 @@ class datalake():
                 account_url = "{}://{}.dfs.core.windows.net".format("https", storage_account_name),
                 credential = token_credential)
 
+        self._file_system_client = self._client.get_file_system_client("datalake")  
+        
         self._import_settings = {
             "parquet" : self._read_parquet,
             "csv" : self._read_csv,
