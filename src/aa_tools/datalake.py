@@ -60,3 +60,14 @@ class datalake():
         elif write_format == "json":
             file_contents = json.dumps(data).encode('utf-8')
         file_client.upload_data(file_contents, overwrite=True)
+
+    # Esta funcion lee y devuelve una lista con los nombres de los archivos en una carpeta
+    def read_folder(self, prefix, extension):
+        import re
+        file_names = []
+        for file in self._file_system_client.get_paths(path=prefix):
+            file_name = file.name
+            match = re.match(r'{}(.+){}'.format(prefix, re.escape(extension)), file_name)
+            if match:
+                file_names.append(match.group(1))
+        return file_names
