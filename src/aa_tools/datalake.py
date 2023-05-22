@@ -49,8 +49,8 @@ class datalake():
         return self._import_settings[read_format](bytes = downloaded_bytes, separator = separator, decimal = decimal)
 
 
-    def upload_file(self, data, path, filename, write_format, file_system = "datalake"):
-        directory_client = self._client.get_directory_client(file_system = file_system, directory = path)
+    def upload_file(self, data, path, filename, write_format, file_system="datalake"):
+        directory_client = self._client.get_directory_client(file_system=file_system, directory=path)
 
         file_client = directory_client.create_file(filename)
         if write_format == "parquet":
@@ -58,7 +58,17 @@ class datalake():
         elif write_format == "csv":
             file_contents = data.to_csv(index=False).encode()
         elif write_format == "json":
-            file_contents = json.dumps(data).encode('utf-8')
+            # Verifica si data es un DataFrame de pandas
+            if isinstance(data, pd.DataFrame):
+                file_contents = data.to_json(orient='records').encode('utf-8')
+            # Verifica si data es un diccionario
+            elif isinstance(data, dict):
+                file_contents = json.dumps(data).encode('utf-8')
+            # Verifica si data es una lista de diccionarios
+            elif isinstance(data, list) and all(isinstance(item, dict) for item in data):
+                file_contents = json.dumps(data).encode('utf-8')
+            else:
+                raise ValueError("El formato de 'data' no es compatible para la conversión a JSON.")
         file_client.upload_data(file_contents, overwrite=True)
 
     # Esta funcion lee y devuelve una lista con los nombres de los archivos en una carpeta
@@ -67,7 +77,7 @@ class datalake():
         file_names = []
         for file in self._file_system_client.get_paths(path=prefix):
             file_name = file.name
-            match = re.match(r'{}(.+){}'.format(prefix, re.escape(extension)), file_name)
+            match = re.match(r'{}(.+)\.{}'.format(prefix, re.escape(extension)), file_name)
             if match:
                 file_names.append(match.group(1))
         return file_names
