@@ -3,13 +3,11 @@ requires = ["setuptools>=42"]
 build-backend = "setuptools.build_meta"
 [project]
 name = "andreani_aa_tools"
-version = "0.0.20"
+version = "0.0.21"
 authors = [
-  { name = "Ignacio Belogi", email = "ibelogi@andreani.com" },
   { name = "Gabriel Aranda", email = "garanda@andreani.com" },
   { name = "Mariana Liu", email = "mliu@andreani.com" },
   { name = "Yasmin Ojeda", email = "yojeda@andreani.com" },
-  { name = "Ariel Fleiderman", email = "afleiderman@andreani.com" },
   { name = "Daiana Alonso", email = "dalonso@andreani.com" },
   { name = "Facundo Silvestre", email = "fsilvestre@andreani.com" },
   { name = "Santiago Bergman", email = "sbergman@andreani.com" },
