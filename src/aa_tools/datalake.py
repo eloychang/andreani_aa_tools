@@ -20,9 +20,7 @@ class datalake():
         # Defino la conexión al datalake
         self._client = DataLakeServiceClient(
                 account_url = "{}://{}.dfs.core.windows.net".format("https", storage_account_name),
-                credential = token_credential)
-
-        self._file_system_client = self._client.get_file_system_client("datalake")  
+                credential = token_credential) 
         
         self._import_settings = {
             "parquet" : self._read_parquet,
@@ -72,9 +70,10 @@ class datalake():
         file_client.upload_data(file_contents, overwrite=True)
 
     # Esta funcion lee y devuelve una lista con los nombres de los archivos en una carpeta
-    def read_folder(self, prefix, extension):
+    def read_folder(self, prefix, storage_account_name, extension):
         import re
         file_names = []
+        self._file_system_client = self._client.get_file_system_client(f"{storage_account_name}") 
         for file in self._file_system_client.get_paths(path=prefix):
             file_name = file.name
             match = re.match(r'{}(.+)\.{}'.format(prefix, re.escape(extension)), file_name)
