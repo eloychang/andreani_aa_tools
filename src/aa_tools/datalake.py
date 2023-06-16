@@ -37,12 +37,12 @@ class datalake():
         return  pd.read_parquet(BytesIO(bytes))
 
     def _read_json(self, bytes, **kwarg):
-        return  json.loads(bytes)
+        return json.loads(bytes.decode('utf-8'))
 
     def import_file(self, path, filename, read_format, file_system = "datalake", separator = ',', decimal = '.'):
         directory_client = self._client.get_directory_client(file_system = file_system, directory = path)
         file_client = directory_client.get_file_client(filename)
-        # descargo los datos
+        # Descargo los datos
         download = file_client.download_file()
         downloaded_bytes = download.readall()
 
@@ -81,3 +81,7 @@ class datalake():
             if match:
                 file_names.append(match.group(1))
         return file_names
+
+    def create_directory(self, path):
+        directory_client = self._file_system_client.get_directory_client(path)
+        directory_client.create_directory()
