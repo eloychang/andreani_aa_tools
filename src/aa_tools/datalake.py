@@ -20,8 +20,8 @@ class datalake():
         # Defino la conexión al datalake
         self._client = DataLakeServiceClient(
                 account_url = "{}://{}.dfs.core.windows.net".format("https", storage_account_name),
-                credential = token_credential)
-
+                credential = token_credential) 
+        
         self._import_settings = {
             "parquet" : self._read_parquet,
             "csv" : self._read_csv,
@@ -35,20 +35,20 @@ class datalake():
         return  pd.read_parquet(BytesIO(bytes))
 
     def _read_json(self, bytes, **kwarg):
-        return  json.loads(bytes)
+        return json.loads(bytes.decode('utf-8'))
 
     def import_file(self, path, filename, read_format, file_system = "datalake", separator = ',', decimal = '.'):
         directory_client = self._client.get_directory_client(file_system = file_system, directory = path)
         file_client = directory_client.get_file_client(filename)
-        # descargo los datos
+        # Descargo los datos
         download = file_client.download_file()
         downloaded_bytes = download.readall()
 
         return self._import_settings[read_format](bytes = downloaded_bytes, separator = separator, decimal = decimal)
 
 
-    def upload_file(self, data, path, filename, write_format, file_system = "datalake"):
-        directory_client = self._client.get_directory_client(file_system = file_system, directory = path)
+    def upload_file(self, data, path, filename, write_format, file_system="datalake"):
+        directory_client = self._client.get_directory_client(file_system=file_system, directory=path)
 
         file_client = directory_client.create_file(filename)
         if write_format == "parquet":
@@ -56,5 +56,31 @@ class datalake():
         elif write_format == "csv":
             file_contents = data.to_csv(index=False).encode()
         elif write_format == "json":
-            file_contents = json.dumps(data).encode('utf-8')
+            # Verifica si data es un DataFrame de pandas
+            if isinstance(data, pd.DataFrame):
+                file_contents = data.to_json(orient='records').encode('utf-8')
+            # Verifica si data es un diccionario
+            elif isinstance(data, dict):
+                file_contents = json.dumps(data).encode('utf-8')
+            # Verifica si data es una lista de diccionarios
+            elif isinstance(data, list) and all(isinstance(item, dict) for item in data):
+                file_contents = json.dumps(data).encode('utf-8')
+            else:
+                raise ValueError("El formato de 'data' no es compatible para la conversión a JSON.")
         file_client.upload_data(file_contents, overwrite=True)
+
+    # Esta funcion lee y devuelve una lista con los nombres de los archivos en una carpeta
+    def read_folder(self, prefix, storage_account_name, extension):
+        import re
+        file_names = []
+        self._file_system_client = self._client.get_file_system_client(f"{storage_account_name}") 
+        for file in self._file_system_client.get_paths(path=prefix):
+            file_name = file.name
+            match = re.match(r'{}(.+)\.{}'.format(prefix, re.escape(extension)), file_name)
+            if match:
+                file_names.append(match.group(1))
+        return file_names
+
+    def create_directory(self, path):
+        directory_client = self._file_system_client.get_directory_client(path)
+        directory_client.create_directory()
